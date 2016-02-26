@@ -1,10 +1,10 @@
-(ns chronverna.setup)
-
-(def max-players 7)
+(ns chronverna.setup
+  (:require
+    [chronverna.constants :as constants]))
 
 (def initial-state
   {:mode :setup
-   :player-colors (vec (repeat max-players nil))})
+   :player-colors (vec (repeat constants/max-players nil))})
 
 (defn set-player-color [state index color]
   (assoc-in state [:player-colors index] color))

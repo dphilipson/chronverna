@@ -2,6 +2,7 @@
   (:require [reagent.core :as reagent :refer [atom]]
             [chronverna.setup :as setup]
             [chronverna.game :as game]
+            [chronverna.components :as components]
             [cljs.reader :as reader]))
 
 (enable-console-print!)
@@ -26,13 +27,20 @@
                    saved-state (when saved-state-edn (reader/read-string saved-state-edn))]
                (atom (or saved-state setup/initial-state)))))
 
-(defonce app-state (atom {:text "Hello world!"}))
+; Reset
 
-(defn hello-world []
-  [:h1 (:text @app-state)])
+(defn clear-state! []
+  (reset! app-state-atom setup/initial-state)
+  (.removeItem js/localStorage state-key))
 
-(reagent/render-component [hello-world]
-                          (. js/document (getElementById "app")))
+(defn clear-state-request-confirm! []
+  (let [confirmed (js/confirm "Quit current game and return to faction select?")]
+    (when confirmed (clear-state!))))
+
+(when-let [app-container (.getElementById js/document "app")]
+  (reagent/render-component
+    [components/main app-state-atom nil]
+    app-container))
 
 
 (defn on-js-reload []

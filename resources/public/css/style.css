@@ -1,2 +1,65 @@
-/* some style */
+body {
+    overflow: hidden;
+}
 
+*, p {
+    margin: 0;
+    padding: 0;
+    font-family: "Verdana";
+}
+
+.chronverna {
+    display: flex;
+    flex-direction: column;
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding-bottom: 20px;
+
+    transition: background 0.25s;
+}
+
+/* Player colors */
+
+.red {
+}
+
+.orange {
+}
+
+.yellow {
+}
+
+.green {
+}
+
+.light-blue {
+}
+
+.dark-blue {
+}
+
+.purple {
+}
+
+/* Setup */
+
+.player-select-wrapper {
+    padding:  16px 8px 0px 8px;
+    text-align: center;
+}
+
+.player-select-wrapper>* {
+    margin-bottom: 16px;
+}
+
+.name-input-container {
+    padding-right: 0;
+}
+
+.color-select-container {
+    padding-left: 8px;
+}
