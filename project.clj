@@ -31,6 +31,13 @@
                            :output-to "resources/public/js/compiled/chronverna.js"
                            :output-dir "resources/public/js/compiled/out"
                            :source-map-timestamp true}}
+               {:id "test"
+                :source-paths ["src" "test"]
+                :compiler {:main chronverna.core-test
+                           :asset-path "js/test/out"
+                           :output-to "resources/public/js/test/test.js"
+                           :output-dir "resources/public/js/test/out"
+                           :source-map-timestamp true}}
                ;; This next build is an compressed minified build for
                ;; production. You can build this with:
                ;; lein cljsbuild once min
