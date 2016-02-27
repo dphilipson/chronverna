@@ -17,10 +17,17 @@
    [color-select]
    [:button.remove-player-button.btn.btn-default>span.glyphicon.glyphicon-remove]])
 
+; Add player button
+
+(defn add-player-button []
+  [:div.add-player-button-container>button.add-player-button.btn.btn-default
+   [:span.glyphicon.glyphicon-plus]
+   " Add player"])
+
 ; Start button
 
 (defn start-game-button []
-  [:button.start-game-button.btn.btn-primary.btn-lg nil "Start Game"])
+  [:div.start-game-button-container>button.btn.btn-primary.btn-lg nil "Start Game"])
 
 ; Main component
 
@@ -32,4 +39,5 @@
     [:div.player-select-area
      (for [i (range constants/max-players)]
        ^{:key i} [player-select])]
+    [add-player-button]
     [start-game-button]]])

@@ -88,6 +88,10 @@ body {
     flex: 0 auto;
 }
 
-.start-game-button {
+.add-player-button {
+    width: 100%;
+}
+
+.start-game-button-container {
     margin-top: 16px;
 }
