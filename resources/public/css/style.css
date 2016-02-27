@@ -1,3 +1,13 @@
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
 body {
     overflow: hidden;
 }
@@ -47,19 +57,37 @@ body {
 
 /* Setup */
 
-.player-select-wrapper {
+.setup-wrapper {
     padding:  16px 8px 0px 8px;
     text-align: center;
 }
 
-.player-select-wrapper>* {
-    margin-bottom: 16px;
+.player-select-area {
+    margin-top: 24px;
 }
 
-.name-input-container {
-    padding-right: 0;
+.player-select-row {
+    display: flex;
+    flex-direction: row;
+    margin: 8px 0;
 }
 
-.color-select-container {
-    padding-left: 8px;
+.player-select-row>* {
+    margin: 0 4px;
+}
+
+.name-input {
+    flex: 1 auto;
+}
+
+.color-select {
+    flex: 0 0 33%;
+}
+
+.remove-player-button {
+    flex: 0 auto;
+}
+
+.start-game-button {
+    margin-top: 16px;
 }

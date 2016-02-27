@@ -6,15 +6,16 @@
 ; Player select
 
 (defn color-select []
-  [:select.form-control nil
+  [:select.color-select.form-control nil
    (for [color constants/colors]
      ^{:key color} [:option {:value color} (constants/title color)])])
 
 (defn player-select []
-  [:div.row
-   [:div.name-input-container.col-xs-8>input.form-control {:type        "text"
-                                                           :placeholder "Player 1"}]
-   [:div.color-select-container.col-xs-4 [color-select]]])
+  [:div.player-select-row
+   [:input.name-input.form-control {:type        "text"
+                                    :placeholder "Player 1"}]
+   [color-select]
+   [:button.remove-player-button.btn.btn-default>span.glyphicon.glyphicon-remove]])
 
 ; Start button
 
@@ -24,10 +25,11 @@
 ; Main component
 
 (defn main [state actions]
-  [:div.chroverna
-   [:div.player-select-wrapper
+  [:div.chroverna.no-select
+   [:div.setup-wrapper
     [:h1 "Chronverna"]
     [:h4 "Player Select"]
-    (for [i (range constants/max-players)]
-      ^{:key i} [player-select])
+    [:div.player-select-area
+     (for [i (range constants/max-players)]
+       ^{:key i} [player-select])]
     [start-game-button]]])
