@@ -19,8 +19,18 @@
    :round           1
    :players         [ms-scarlet mr-green prof-plum]})
 
+(def base-meta-state
+  {:paused            false
+   :last-timestamp-ms nil
+   :history           []
+   :history-index     0
+   :game-state        base-game-state})
+
 (defn game-state [& kvs]
   (merge base-game-state (apply hash-map kvs)))
+
+(defn meta-state [& kvs]
+  (merge base-meta-state (apply hash-map kvs)))
 
 ; Tests
 
@@ -29,20 +39,26 @@
     (let [players [{:name "Miss Scarlet", :color :red}
                    {:name "Mr. Green", :color :green}]
           state (game/new-game-state players)
-          expected {:current-index   0
-                    :starting-index  0
-                    :between-rounds? true
-                    :round           1
-                    :players         [{:name         "Miss Scarlet"
-                                       :color        :red
-                                       :remaining    2
-                                       :family-size  2
-                                       :time-used-ms 0}
-                                      {:name         "Mr. Green"
-                                       :color        :green
-                                       :remaining    2
-                                       :family-size  2
-                                       :time-used-ms 0}]}]
+          expected-game-state {:current-index   0
+                               :starting-index  0
+                               :between-rounds? true
+                               :round           1
+                               :players         [{:name         "Miss Scarlet"
+                                                  :color        :red
+                                                  :remaining    2
+                                                  :family-size  2
+                                                  :time-used-ms 0}
+                                                 {:name         "Mr. Green"
+                                                  :color        :green
+                                                  :remaining    2
+                                                  :family-size  2
+                                                  :time-used-ms 0}]}
+          expected {:mode              :game
+                    :paused?           false
+                    :last-timestamp-ms nil
+                    :history           []
+                    :history-index     0
+                    :game-state        expected-game-state}]
       (is (= state expected)))))
 
 (deftest test-start-round
@@ -107,4 +123,38 @@
           expected-state (game-state :players [ms-scarlet expected-green prof-plum]
                                      :current-index 2
                                      :starting-index 1)]
+      (is (= updated-state expected-state)))))
+
+(deftest test-advance-to-time
+  (testing "Should add to current player when in play"
+    (let [mr-green-with-time (assoc mr-green :time-used-ms 200)
+          initial-state (meta-state :paused? false
+                                    :last-timestamp-ms 1000
+                                    :game-state
+                                    (game-state :players [ms-scarlet mr-green-with-time prof-plum]
+                                                :current-index 1))
+          updated-state (game/advance-to-time initial-state 1300)
+          expected-green (assoc mr-green :time-used-ms 500)
+          expected-state (meta-state :paused? false
+                                     :last-timestamp-ms 1300
+                                     :game-state
+                                     (game-state :players [ms-scarlet expected-green prof-plum]
+                                                 :current-index 1))]
+      (is (= updated-state expected-state))))
+  (testing "Should not update player time on first update"
+    (let [state (game/advance-to-time base-meta-state 1300)
+          expected-state (meta-state :last-timestamp-ms 1300)]
+      (is (= state expected-state))))
+  (testing "Should not add to time when paused"
+    (let [initial-state (meta-state :paused? true
+                                    :last-timestamp-ms 1000)
+          updated-state (game/advance-to-time initial-state 1300)
+          expected-state (meta-state :paused? true
+                                     :last-timestamp-ms 1300)]
+      (is (= updated-state expected-state))))
+  (testing "Should not add to time when between rounds"
+    (let [initial-state (meta-state :last-timestamp-ms 1000
+                                    :game-state (game-state :between-rounds? true))
+          updated-state (game/advance-to-time initial-state 1300)
+          expected-state (assoc initial-state :last-timestamp-ms 1300)]
       (is (= updated-state expected-state)))))

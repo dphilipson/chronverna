@@ -1,13 +1,21 @@
 (ns chronverna.game)
 
+(def initial-family-size 2)
+
 (defn new-game-state [players]
-  {:current-index   0
-   :starting-index  0
-   :between-rounds? true
-   :round           1
-   :players         (vec (map
-                           (partial merge {:remaining 2, :family-size 2, :time-used-ms 0})
-                           players))})
+  (let [new-player (partial merge {:remaining    initial-family-size
+                                   :family-size  initial-family-size
+                                   :time-used-ms 0})]
+    {:mode              :game
+     :paused?           false
+     :last-timestamp-ms nil
+     :history           []
+     :history-index     0
+     :game-state        {:current-index   0
+                         :starting-index  0
+                         :between-rounds? true
+                         :round           1
+                         :players         (mapv new-player players)}}))
 
 (defn start-round [game-state]
   (assoc game-state :between-rounds? false))
@@ -18,14 +26,14 @@
 (defn next-player-index
   "Returns the index of the player whose turn is after the current player, or nil if it would be the
    end of the round."
-  [game-state]
-  (let [indexed-players (map-indexed vector (:players game-state))
-        players-after-current (rotate-seq indexed-players (inc (:current-index game-state)))
+  [{:keys [players current-index] :as game-state}]
+  (let [indexed-players (map-indexed vector players)
+        players-after-current (rotate-seq indexed-players (inc current-index))
         [index _] (first (filter (fn [[_ player]]
                                    (pos? (:remaining player)))
                                  players-after-current))]
     ; If the next player is the current player and they are on their last dwarf, return nil.
-    (if (and (= index (:current-index game-state))
+    (if (and (= index current-index)
              (= (get-in game-state [:players index :remaining]) 1))
       nil
       index)))
@@ -54,3 +62,16 @@
   (-> game-state
       (assoc :starting-index (:current-index game-state))
       player-selected-next))
+
+(defn advance-to-time [{:keys [paused? last-timestamp-ms game-state] :as state} timestamp-ms]
+  (let [{:keys [between-rounds? current-index]} game-state
+        time-delta-ms (if last-timestamp-ms
+                         (- timestamp-ms last-timestamp-ms)
+                         0)
+        new-time-state (assoc state :last-timestamp-ms timestamp-ms)]
+    (if (or paused? between-rounds?)
+      new-time-state
+      (update-in
+        new-time-state
+        [:game-state :players current-index :time-used-ms]
+        + time-delta-ms))))
