@@ -6,7 +6,7 @@
    :between-rounds? true
    :round           1
    :players         (vec (map
-                           (partial merge {:remaining 2, :family-size 2})
+                           (partial merge {:remaining 2, :family-size 2, :time-used-ms 0})
                            players))})
 
 (defn start-round [game-state]
