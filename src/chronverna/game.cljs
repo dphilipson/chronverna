@@ -66,8 +66,8 @@
 (defn advance-to-time [{:keys [paused? last-timestamp-ms game-state] :as state} timestamp-ms]
   (let [{:keys [between-rounds? current-index]} game-state
         time-delta-ms (if last-timestamp-ms
-                         (- timestamp-ms last-timestamp-ms)
-                         0)
+                        (- timestamp-ms last-timestamp-ms)
+                        0)
         new-time-state (assoc state :last-timestamp-ms timestamp-ms)]
     (if (or paused? between-rounds?)
       new-time-state
@@ -75,3 +75,37 @@
         new-time-state
         [:game-state :players current-index :time-used-ms]
         + time-delta-ms))))
+
+; History
+
+; Enough for seven players averaging four moves per round. Should be enough.
+(def max-history-size 400)
+
+(defn trim-history [{:keys [history history-index] :as state}]
+  (let [trim-amount (max 0 (- (count history) max-history-size))]
+    (assoc state :history (subvec history trim-amount)
+                 :history-index (- history-index trim-amount))))
+
+(defn update-game-state-add-history
+  [{:keys [game-state history history-index] :as state} f & args]
+  (-> state
+      (assoc :game-state (apply f game-state args)
+             :history (-> history (subvec 0 history-index) (conj game-state))
+             :history-index (inc history-index))
+      trim-history))
+
+(defn undo [{:keys [game-state history history-index] :as state}]
+  (assoc state :history (if (= (count history) history-index)
+                          (conj history game-state)
+                          history)
+               :history-index (dec history-index)
+               :game-state (history (dec history-index))))
+
+(defn redo [{:keys [history history-index] :as state}]
+  (let [new-index (inc history-index)
+        history-size (count history)]
+    (assoc state :history (if (= new-index (dec history-size))
+                            (subvec history 0 (dec history-size))
+                            history)
+                 :history-index new-index
+                 :game-state (history new-index))))
