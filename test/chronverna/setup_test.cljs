@@ -33,7 +33,7 @@
   (testing "It should choose an available color"
     (let [initial-state (setup-state [ms-scarlet])
           updated-state (setup/add-player initial-state)
-          expected-state (setup-state [ms-scarlet (anonymous :orange)])]
+          expected-state (setup-state [ms-scarlet (anonymous :yellow)])]
       (is (= updated-state expected-state)))))
 
 (deftest test-set-player-color

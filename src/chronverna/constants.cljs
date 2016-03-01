@@ -5,7 +5,7 @@
 (def max-players 7)
 
 (def colors
-  [:red :orange :yellow :green :light-blue :dark-blue :purple])
+  [:red :yellow :green :light-blue :dark-blue :purple :white])
 
 (defn title [keyword]
   (->>
