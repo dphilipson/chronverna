@@ -44,3 +44,13 @@
         (assoc :current-index next-index)
         (update-in [:players (:current-index game-state) :remaining] dec))
     (end-round game-state)))
+
+(defn player-added-dwarf [game-state]
+  (-> game-state
+      (update-in [:players (:current-index game-state) :family-size] inc)
+      player-selected-next))
+
+(defn player-took-starting-player [game-state]
+  (-> game-state
+      (assoc :starting-index (:current-index game-state))
+      player-selected-next))
