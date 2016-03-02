@@ -1,5 +1,6 @@
 (ns chronverna.setup
   (:require
+    [clojure.string :as str]
     [chronverna.constants :as constants]))
 
 (def initial-state
@@ -39,3 +40,13 @@
 
 (defn remove-player [state index]
   (update state :players remove-vec-element index))
+
+(defn get-players [state]
+  (->> state
+       :players
+       (map-indexed (fn [i player]
+                      (update player :name (fn [name]
+                                             (if (str/blank? name)
+                                               (str "Player " (inc i))
+                                               name)))))
+       vec))

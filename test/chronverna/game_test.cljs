@@ -5,12 +5,17 @@
 
 ; Test helpers
 
-(defn test-player [name color]
-  {:name name, :color color, :remaining 2, :family-size 2, :time-used-ms 0})
+(defn test-player [name color index]
+  {:name         name
+   :color        color
+   :index        index
+   :remaining    2
+   :family-size  2
+   :time-used-ms 0})
 
-(def ms-scarlet (test-player "Miss Scarlet" :red))
-(def mr-green (test-player "Mr. Green" :green))
-(def prof-plum (test-player "Professor Plum" :purple))
+(def ms-scarlet (test-player "Miss Scarlet" :red 0))
+(def mr-green (test-player "Mr. Green" :green 1))
+(def prof-plum (test-player "Professor Plum" :purple 2))
 
 (def base-game-state
   {:current-index   0
@@ -45,11 +50,13 @@
                                :round           1
                                :players         [{:name         "Miss Scarlet"
                                                   :color        :red
+                                                  :index        0
                                                   :remaining    2
                                                   :family-size  2
                                                   :time-used-ms 0}
                                                  {:name         "Mr. Green"
                                                   :color        :green
+                                                  :index        1
                                                   :remaining    2
                                                   :family-size  2
                                                   :time-used-ms 0}]}
@@ -104,21 +111,21 @@
                                      :round 3)]
       (is (= updated-state expected-state)))))
 
-(deftest test-player-added-dwarf
+(deftest test-player-grew-family
   (testing "It should add an unavailable dwarf, use a dwarf, and move to next player"
     (let [initial-state base-game-state
-          updated-state (game/player-added-dwarf initial-state)
+          updated-state (game/player-grew-family initial-state)
           expected-scarlet (assoc ms-scarlet :remaining 1
                                              :family-size 3)
           expected-state (game-state :players [expected-scarlet mr-green prof-plum]
                                      :current-index 1)]
       (is (= updated-state expected-state)))))
 
-(deftest test-player-took-starting-player
+(deftest test-player-took-start-player
   (testing "It should set starting-player, use a dwarf, and move to next player"
     (let [initial-state (game-state :players [ms-scarlet mr-green prof-plum]
                                     :current-index 1)
-          updated-state (game/player-took-starting-player initial-state)
+          updated-state (game/player-took-start-player initial-state)
           expected-green (assoc mr-green :remaining 1)
           expected-state (game-state :players [ms-scarlet expected-green prof-plum]
                                      :current-index 2

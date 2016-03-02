@@ -32,27 +32,164 @@ body {
     transition: background 0.25s;
 }
 
+.meta-button-area {
+    margin-top: 16px;
+    margin-left: 16px;
+    margin-right: 16px;
+
+    display: flex;
+
+    flex-direction: row;
+
+    justify-content: flex-end;
+}
+
+.meta-button-area .spacer {
+    flex: 1;
+}
+
+.redo-button {
+    margin-right: 24px;
+}
+
+.undo-button {
+    margin-right: 6px;
+}
+
+.current-player-area {
+    flex: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    transition: color 0.25s;
+}
+
+.active-player-name {
+    padding-top: 48px;
+    font-size: 24px;
+}
+
+.active-player-status {
+    padding-top: 8px;
+    font-size: 14px;
+}
+
+.clock-area {
+    flex: 1;
+
+    display: flex;
+
+    align-items: center;
+}
+
+.clock {
+    font-size: 96px;
+}
+
+.clock-subsecond {
+    font-size: 32px;
+}
+
+.button-area {
+    width: 100%;
+    padding-bottom: 48px;
+
+    display: flex;
+
+    justify-content: space-around;
+}
+
+.next-button {
+    width: 100%;
+    padding-left: 48px;
+    padding-right: 48px;
+}
+
+.active-players-area {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+}
+
+.done-players-area {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+}
+
+.player-list-label {
+    display: flex;
+
+    align-items: center;
+
+    font-size: 18px;
+    height: 36px;
+}
+
+.player-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    height: 36px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.player-item .player-label {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.player-item .timer {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.slide-up-enter {
+    position: relative;
+    opacity: 0.01;
+    top: 24px;
+}
+
+.slide-up-enter.slide-up-enter-active {
+    opacity: 1;
+    top: 0;
+    transition: opacity 0.25s ease-in, top 0.25s ease-in;
+}
+
 /* Player colors */
 
 .red {
-}
-
-.orange {
+    background: rgb(240, 128, 128);
 }
 
 .yellow {
+    background: rgb(240, 240, 128);
 }
 
 .green {
+    background: rgb(128, 240, 128);
 }
 
 .light-blue {
+    background: #3b9c9c;
 }
 
 .dark-blue {
+    background: #2b60de;
 }
 
 .purple {
+    background: #7d0552;
 }
 
 /* Setup */

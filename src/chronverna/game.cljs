@@ -1,11 +1,14 @@
-(ns chronverna.game)
-
-(def initial-family-size 2)
+(ns chronverna.game
+  (:require
+    [chronverna.constants :as constants]
+    [chronverna.util :as util]))
 
 (defn new-game-state [players]
-  (let [new-player (partial merge {:remaining    initial-family-size
-                                   :family-size  initial-family-size
-                                   :time-used-ms 0})]
+  (let [new-player (fn [index player]
+                     (merge player {:index        index
+                                    :remaining    constants/initial-family-size
+                                    :family-size  constants/initial-family-size
+                                    :time-used-ms 0}))]
     {:mode              :game
      :paused?           false
      :last-timestamp-ms nil
@@ -15,20 +18,17 @@
                          :starting-index  0
                          :between-rounds? true
                          :round           1
-                         :players         (mapv new-player players)}}))
+                         :players         (vec (map-indexed new-player players))}}))
 
 (defn start-round [game-state]
   (assoc game-state :between-rounds? false))
-
-(defn rotate-seq [s i]
-  (concat (drop i s) (take i s)))
 
 (defn next-player-index
   "Returns the index of the player whose turn is after the current player, or nil if it would be the
    end of the round."
   [{:keys [players current-index] :as game-state}]
   (let [indexed-players (map-indexed vector players)
-        players-after-current (rotate-seq indexed-players (inc current-index))
+        players-after-current (util/rotate-seq (inc current-index) indexed-players)
         [index _] (first (filter (fn [[_ player]]
                                    (pos? (:remaining player)))
                                  players-after-current))]
@@ -43,8 +43,8 @@
       (assoc :current-index (:starting-index game-state)
              :between-rounds? true)
       (update :round inc)
-      (update :players (partial map (fn [p]
-                                      (assoc p :remaining (:family-size p)))))))
+      (update :players (partial mapv (fn [p]
+                                       (assoc p :remaining (:family-size p)))))))
 
 (defn player-selected-next [game-state]
   (if-let [next-index (next-player-index game-state)]
@@ -53,12 +53,12 @@
         (update-in [:players (:current-index game-state) :remaining] dec))
     (end-round game-state)))
 
-(defn player-added-dwarf [game-state]
+(defn player-grew-family [game-state]
   (-> game-state
       (update-in [:players (:current-index game-state) :family-size] inc)
       player-selected-next))
 
-(defn player-took-starting-player [game-state]
+(defn player-took-start-player [game-state]
   (-> game-state
       (assoc :starting-index (:current-index game-state))
       player-selected-next))

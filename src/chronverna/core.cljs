@@ -27,6 +27,11 @@
                    saved-state (when saved-state-edn (reader/read-string saved-state-edn))]
                (atom (or saved-state setup/initial-state)))))
 
+; Setup to Game transition
+
+(defn new-game-from-setup [setup-state]
+  (game/new-game-state (setup/get-players setup-state)))
+
 ; Reset
 
 (defn clear-state! []
@@ -37,14 +42,59 @@
   (let [confirmed (js/confirm "Quit current game and return to faction select?")]
     (when confirmed (clear-state!))))
 
+; Side-effecting actions
+
+(defn save-state! []
+  (.setItem js/localStorage state-key (prn-str @app-state-atom)))
+
+(defn swap-state! [f & args]
+  (apply swap! app-state-atom f args))
+
+(defn swap-state-and-save! [f & args]
+  (apply swap-state! f args)
+  (save-state!))
+
+(defn swap-game-state-push-history-save! [f & args]
+  (apply swap-state-and-save! game/update-game-state-add-history f args))
+
+; Add components with Reagent
+
 (when-let [app-container (.getElementById js/document "app")]
   (reagent/render-component
-    [components/main app-state-atom nil]
+    [components/main
+     app-state-atom
+     {:on-add-player        #(swap-state! setup/add-player)
+      :on-set-player-color  (partial swap-state! setup/set-player-color)
+      :on-set-player-name   (partial swap-state! setup/set-player-name)
+      :on-remove-player     (partial swap-state! setup/remove-player)
+      :on-start-game        #(swap-state! new-game-from-setup)
+
+      :on-start-round       #(swap-game-state-push-history-save! game/start-round)
+      :on-next              #(swap-game-state-push-history-save! game/player-selected-next)
+      :on-grow-family       #(swap-game-state-push-history-save! game/player-grew-family)
+      :on-take-start-player #(swap-game-state-push-history-save! game/player-took-start-player)
+      :on-pause             #(swap-state-and-save! assoc :paused? true)
+      :on-unpause           #(swap-state-and-save! assoc :paused? false)
+      :on-undo              #(swap-state-and-save! game/undo)
+      :on-redo              #(swap-state-and-save! game/redo)
+      :on-reset             #(clear-state-request-confirm!)}]
     app-container))
 
+; Call advance-to-time on ticks
+
+(defn current-time-ms []
+  (.getTime (js/Date.)))
+
+(defonce timer-did-start
+         (do
+           ((fn request-frame []
+              (if (= (:mode @app-state-atom) :game)
+                (swap-state! game/advance-to-time (current-time-ms)))
+              (js/requestAnimationFrame request-frame)))
+           true))
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)
+  )
