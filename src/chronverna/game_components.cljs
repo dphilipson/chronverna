@@ -1,7 +1,15 @@
 (ns chronverna.game-components
   (:require
+    [reagent.core :as reagent]
     [chronverna.constants :as constants]
     [chronverna.util :as util]))
+
+;; CSS transitions
+
+(def css-transition-group
+  (reagent/adapt-react-class js/React.addons.CSSTransitionGroup))
+
+;; State reading
 
 (defn current-player [game-state]
   (get-in game-state [:players (:current-index game-state)]))
@@ -143,20 +151,23 @@
     (when (seq players)
       [:div.active-players-area
        [:p.player-list-label "Next:"]
-       (for [{:keys [index] :as player} players]
-         ^{:key index}
-         [player-list-item player (= index starting-index)])])))
+       [css-transition-group {:transition-name "slide-up", :transition-leave false}
+        (for [{:keys [index] :as player} players]
+          ^{:key index}
+          [player-list-item player (= index starting-index)])]])))
 
 ;; Passed player area
 
 (defn done-players-area [{:keys [starting-index] :as game-state}]
-  (let [players (done-players game-state)]
-    (when (seq players)
-      [:div.done-players-area
-       [:p.player-list-label "Done:"]
-       (for [{:keys [index] :as player} players]
-         ^{:key index}
-         [player-list-item player (= index starting-index)])])))
+  [css-transition-group {:transition-name "slide-up", :transition-leave false}
+   (let [players (done-players game-state)]
+     (when (seq players)
+       [:div.done-players-area
+        [:p.player-list-label "Done:"]
+        [css-transition-group {:transition-name "slide-up", :transition-leave false}
+         (for [{:keys [index] :as player} players]
+           ^{:key index}
+           [player-list-item player (= index starting-index)])]]))])
 
 (defn main [state actions]
   (let [game-state (:game-state state)]
