@@ -110,16 +110,21 @@ body {
 .grow-family-button {
     flex: 1;
     margin-right: 4px;
+    font-size: 16px;
+    height: 48px;
 }
 
 .take-start-player-button {
     flex: 1;
     margin-left: 4px;
+    font-size: 16px;
+    height: 48px;
 }
 
 .next-button {
     width: 100%;
     margin-top: 8px;
+    height: 48px;
 }
 
 .active-players-area {

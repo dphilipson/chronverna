@@ -14,11 +14,12 @@
      :last-timestamp-ms nil
      :history           []
      :history-index     0
-     :game-state        {:current-index   0
-                         :starting-index  0
-                         :between-rounds? true
-                         :round           1
-                         :players         (vec (map-indexed new-player players))}}))
+     :game-state        {:current-index       0
+                         :starting-index      0
+                         :start-player-taken? false
+                         :between-rounds?     true
+                         :round               1
+                         :players             (vec (map-indexed new-player players))}}))
 
 (defn start-round [game-state]
   (assoc game-state :between-rounds? false))
@@ -41,6 +42,7 @@
 (defn end-round [game-state]
   (-> game-state
       (assoc :current-index (:starting-index game-state)
+             :start-player-taken? false
              :between-rounds? true)
       (update :round inc)
       (update :players (partial mapv (fn [p]
@@ -60,7 +62,8 @@
 
 (defn player-took-start-player [game-state]
   (-> game-state
-      (assoc :starting-index (:current-index game-state))
+      (assoc :starting-index (:current-index game-state)
+             :start-player-taken? true)
       player-selected-next))
 
 (defn advance-to-time [{:keys [paused? last-timestamp-ms game-state] :as state} timestamp-ms]

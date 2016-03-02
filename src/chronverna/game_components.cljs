@@ -32,6 +32,12 @@
 (defn game-over? [game-state]
   (> (:round game-state) constants/num-rounds))
 
+(defn grow-family-available?
+  "One player can get six dwarves, the rest five"
+  [game-state]
+  (or (< (:family-size (current-player game-state)) 5)
+      (not (some #(= (:family-size %) 6) (:players game-state)))))
+
 ;; Meta buttons
 
 (defn reset-button [on-reset]
@@ -98,21 +104,29 @@
 (defn game-over-button []
   [:button.game-over-button.btn.btn-primary.btn-lg.disabled "Game Over"])
 
-(defn special-action-buttons [{:keys [on-grow-family on-take-start-player]}]
+(defn grow-family-button [game-state on-grow-family]
+  (let [enabled? (grow-family-available? game-state)]
+    [:button.grow-family-button.btn.btn-default.btn-lg
+     {:on-click on-grow-family, :disabled (not enabled?)}
+     (if enabled? "Grow Family" "Family Full")]))
+
+(defn take-start-player-button [game-state on-take-start-player]
+  (let [enabled? (not (:start-player-taken? game-state))]
+    [:button.take-start-player-button.btn.btn-default.btn-lg
+     {:on-click on-take-start-player, :disabled (not enabled?)}
+     (if enabled? "Take Start Player" "Start Player Taken")]))
+
+(defn special-action-buttons [game-state {:keys [on-grow-family on-take-start-player]}]
   [:div.special-action-row
-   [:button.grow-family-button.btn.btn-default.btn-lg
-    {:on-click on-grow-family}
-    "Grow Family"]
-   [:button.take-start-player-button.btn.btn-default.btn-lg
-    {:on-click on-take-start-player}
-    "Take Start Player"]])
+   [grow-family-button game-state on-grow-family]
+   [take-start-player-button game-state on-take-start-player]])
 
 (defn next-button [on-next]
   [:button.next-button.btn.btn-primary.btn-lg {:on-click on-next} "Next Player"])
 
-(defn gameplay-buttons [actions]
+(defn gameplay-buttons [game-state actions]
   [:div.gameplay-button-container
-   [special-action-buttons actions]
+   [special-action-buttons game-state actions]
    [next-button (:on-next actions)]])
 
 (defn button-area [{:keys [between-rounds? round] :as game-state}
@@ -121,7 +135,7 @@
    (cond
      (game-over? game-state) [game-over-button]
      between-rounds? [start-round-button round on-start-round]
-     :else [gameplay-buttons actions])])
+     :else [gameplay-buttons game-state actions])])
 
 ;; Current player area
 

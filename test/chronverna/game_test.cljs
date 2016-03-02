@@ -18,11 +18,12 @@
 (def prof-plum (test-player "Professor Plum" :purple 2))
 
 (def base-game-state
-  {:current-index   0
-   :starting-index  0
-   :between-rounds? false
-   :round           1
-   :players         [ms-scarlet mr-green prof-plum]})
+  {:current-index       0
+   :starting-index      0
+   :start-player-taken? false
+   :between-rounds?     false
+   :round               1
+   :players             [ms-scarlet mr-green prof-plum]})
 
 (def base-meta-state
   {:paused            false
@@ -44,22 +45,23 @@
     (let [players [{:name "Miss Scarlet", :color :red}
                    {:name "Mr. Green", :color :green}]
           state (game/new-game-state players)
-          expected-game-state {:current-index   0
-                               :starting-index  0
-                               :between-rounds? true
-                               :round           1
-                               :players         [{:name         "Miss Scarlet"
-                                                  :color        :red
-                                                  :index        0
-                                                  :remaining    2
-                                                  :family-size  2
-                                                  :time-used-ms 0}
-                                                 {:name         "Mr. Green"
-                                                  :color        :green
-                                                  :index        1
-                                                  :remaining    2
-                                                  :family-size  2
-                                                  :time-used-ms 0}]}
+          expected-game-state {:current-index       0
+                               :starting-index      0
+                               :start-player-taken? false
+                               :between-rounds?     true
+                               :round               1
+                               :players             [{:name         "Miss Scarlet"
+                                                      :color        :red
+                                                      :index        0
+                                                      :remaining    2
+                                                      :family-size  2
+                                                      :time-used-ms 0}
+                                                     {:name         "Mr. Green"
+                                                      :color        :green
+                                                      :index        1
+                                                      :remaining    2
+                                                      :family-size  2
+                                                      :time-used-ms 0}]}
           expected {:mode              :game
                     :paused?           false
                     :last-timestamp-ms nil
@@ -103,6 +105,7 @@
                                               (assoc mr-green :remaining 0)
                                               (assoc prof-plum :remaining 0)]
                                     :starting-index 2
+                                    :start-player-taken? true
                                     :round 2)
           updated-state (game/player-selected-next initial-state)
           expected-state (game-state :current-index 2
@@ -129,7 +132,8 @@
           expected-green (assoc mr-green :remaining 1)
           expected-state (game-state :players [ms-scarlet expected-green prof-plum]
                                      :current-index 2
-                                     :starting-index 1)]
+                                     :starting-index 1
+                                     :start-player-taken? true)]
       (is (= updated-state expected-state)))))
 
 (deftest test-advance-to-time
