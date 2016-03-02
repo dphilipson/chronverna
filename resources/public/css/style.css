@@ -60,34 +60,32 @@ body {
     flex: 1;
 
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
+    justify-content: space-around;
 
     transition: color 0.25s;
 }
 
+.player-label-area {
+    text-align: center;
+}
+
 .active-player-name {
-    padding-top: 48px;
     font-size: 24px;
 }
 
 .active-player-status {
-    padding-top: 8px;
     font-size: 14px;
 }
 
 .clock-area {
-    flex: 1;
-
     display: flex;
-
     align-items: center;
 }
 
 .clock {
-    font-size: 96px;
+    font-size: 72px;
 }
 
 .clock-subsecond {
@@ -96,29 +94,40 @@ body {
 
 .button-area {
     width: 100%;
-    padding-bottom: 48px;
+    padding: 0 16px;
+    text-align: center;
+}
 
+.gameplay-button-container {
+    width: 100%;
+}
+
+.special-action-row {
     display: flex;
+    flex-direction: row;
+}
 
-    justify-content: space-around;
+.grow-family-button {
+    flex: 1;
+    margin-right: 4px;
+}
+
+.take-start-player-button {
+    flex: 1;
+    margin-left: 4px;
 }
 
 .next-button {
     width: 100%;
-    padding-left: 48px;
-    padding-right: 48px;
+    margin-top: 8px;
 }
 
 .active-players-area {
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: 16px;
+    padding: 0 16px;
 }
 
 .done-players-area {
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: 16px;
+    padding: 0 16px 16px 16px;
 }
 
 .player-list-label {
@@ -127,7 +136,7 @@ body {
     align-items: center;
 
     font-size: 18px;
-    height: 36px;
+    height: 28px;
 }
 
 .player-item {
@@ -137,19 +146,19 @@ body {
 
     align-items: center;
 
-    height: 36px;
+    height: 30px;
     padding-left: 16px;
     padding-right: 16px;
 }
 
 .player-item .player-label {
-    font-size: 18px;
+    font-size: 16px;
     margin-top: 0;
     margin-bottom: 0;
 }
 
 .player-item .timer {
-    font-size: 18px;
+    font-size: 16px;
     margin-top: 0;
     margin-bottom: 0;
 }
@@ -189,7 +198,11 @@ body {
 }
 
 .purple {
-    background: #7d0552;
+    background: #a74ac7;
+}
+
+.white {
+    background: rgb(224, 240, 255);
 }
 
 /* Setup */

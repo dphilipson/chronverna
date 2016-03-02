@@ -97,7 +97,7 @@
     "Grow Family"]
    [:button.take-start-player-button.btn.btn-default.btn-lg
     {:on-click on-take-start-player}
-    "Take Starting Player"]])
+    "Take Start Player"]])
 
 (defn next-button [on-next]
   [:button.next-button.btn.btn-primary.btn-lg {:on-click on-next} "Next Player"])
@@ -122,9 +122,10 @@
         {:keys [index name remaining family-size time-used-ms]} player
         start-player? (= index (:starting-index game-state))]
     [:div.current-player-area
-     [:p.active-player-name name]
-     [:p.active-player-status (str remaining "/" family-size " actions left"
-                                   (when start-player? ", Starting Player"))]
+     [:div.player-label-area
+      [:p.active-player-name name]
+      [:p.active-player-status (str remaining "/" family-size " actions left"
+                                    (when start-player? ", Starting Player"))]]
      [main-clock time-used-ms]
      [button-area game-state actions]]))
 
