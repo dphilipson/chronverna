@@ -1,4 +1,4 @@
-/resources/public/js/compiled/**
+/resources/public/js/test
 figwheel_server.log
 pom.xml
 *jar
@@ -13,4 +13,3 @@ pom.xml
 .nrepl-port
 /.idea
 *.iml
-/resources/public/js/
